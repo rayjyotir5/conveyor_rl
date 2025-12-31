@@ -1,0 +1,30 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+env/
+.env
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Logs and databases
+*.log
+*.sqlite
+
+# Model checkpoints (keep final model)
+models/checkpoints/
+models/best/
+
+# TensorBoard logs (optional - uncomment to track)
+# logs/
+
+# OS files
+.DS_Store
+Thumbs.db
