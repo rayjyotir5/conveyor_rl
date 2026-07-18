@@ -163,9 +163,14 @@ python run.py evaluate --model models/conveyor_ppo_final --episodes 20
 ```
 conveyor_rl/
 ├── run.py              # Main entry point with CLI commands
-├── environment.py      # Gymnasium environment definition
-├── train.py            # PPO training script
-├── visualize.py        # Visualization and animation tools
+├── environment.py      # Zipper-merge Gymnasium environment
+├── network_env.py      # Graph conveyor network environment
+├── network_graphs.py   # Preset / JSON graph definitions
+├── train.py            # PPO training (zipper merge)
+├── train_network.py    # PPO training (network throughput)
+├── visualize.py        # Zipper-merge visualization
+├── visualize_network.py# Network graph visualization
+├── graphs/             # Example custom graph JSON files
 ├── requirements.txt    # Python dependencies
 ├── models/             # Saved model checkpoints
 │   ├── best/           # Best model during training
@@ -260,6 +265,107 @@ env = ConveyorEnv(
 ### Training Parameters
 
 Modify `train.py` to adjust PPO hyperparameters or network architecture.
+
+## Conveyor Network Graphs (throughput)
+
+Besides the fixed zipper-merge layout, you can define a **graph of conveyors** and train a small policy to maximize throughput.
+
+### Graph model
+
+| Element | Role |
+|---------|------|
+| **Source** node | Spawns items onto outbound belts (`spawn_rate`) |
+| **Junction** node | Holds one item; agent chooses which inbound to pull and which outbound to push |
+| **Sink** node | Items exiting here score **+1 throughput** |
+| **Edge** | Conveyor of fixed `length`; agent can move or stop each belt |
+
+Reward is throughput-first (`+1` per sink exit) with a small optional congestion penalty.
+
+### Built-in presets
+
+| Preset | Topology |
+|--------|----------|
+| `merge` | Two sources → junction → sink |
+| `diamond` | Source → split → two parallel paths → merge → sink |
+| `triple` | Three sources → junction → sink |
+
+### Quick network demo
+
+```bash
+python run.py network-demo --preset merge
+# or
+python run.py network-demo --preset diamond --timesteps 20000
+```
+
+This trains a compact PPO policy (`[32, 32]` MLP), evaluates against a random baseline, and writes `network_demo.gif`.
+
+### Custom graphs
+
+Edit or copy JSON under `graphs/`:
+
+```json
+{
+  "name": "custom_merge",
+  "nodes": [
+    {"id": "src_a", "type": "source", "spawn_rate": 0.7},
+    {"id": "src_b", "type": "source", "spawn_rate": 0.7},
+    {"id": "merge", "type": "junction"},
+    {"id": "sink", "type": "sink"}
+  ],
+  "edges": [
+    {"id": "conv_a", "source": "src_a", "target": "merge", "length": 4},
+    {"id": "conv_b", "source": "src_b", "target": "merge", "length": 4},
+    {"id": "conv_out", "source": "merge", "target": "sink", "length": 4}
+  ]
+}
+```
+
+Train / evaluate / visualize:
+
+```bash
+python run.py network-train --graph graphs/custom_merge.json --timesteps 30000
+python run.py network-evaluate --graph graphs/custom_merge.json --model models/network/network_ppo_final --baseline
+python run.py network-visualize --graph graphs/custom_merge.json --output /tmp/network.gif
+```
+
+### Visualizing the graph and policy
+
+**Static topology** (no model required):
+
+```bash
+python run.py network-graph --preset merge --output network_graph.png
+python run.py network-graph --preset diamond --output diamond_graph.png
+python run.py network-graph --graph graphs/custom_merge.json --output custom_graph.png
+```
+
+**Policy rollout GIF** (items, belt MOVE highlights, junction routing, throughput):
+
+```bash
+python run.py network-visualize \
+  --preset merge \
+  --model models/network/network_ppo_final \
+  --output network_rollout.gif \
+  --graph-output network_graph.png \
+  --steps 150 --fps 5
+```
+
+Use `--random` to animate a random policy without a trained model.
+
+The GIF shows:
+- Directed belts with per-cell occupancy
+- Green arrows when a belt is MOVING
+- Orange highlight on the junction's active inbound/outbound route
+- Action + routing strip under the graph
+- Throughput and items-in-system over time
+
+### Network modules
+
+| File | Purpose |
+|------|---------|
+| `network_graphs.py` | Presets, JSON load/validate |
+| `network_env.py` | `NetworkConveyorEnv` Gymnasium environment |
+| `train_network.py` | Small-policy PPO training + eval |
+| `visualize_network.py` | Static graph PNG + rollout GIF |
 
 ## License
 
