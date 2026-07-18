@@ -8,7 +8,7 @@ This is a single-product, self-contained Python reinforcement-learning CLI (Conv
 - Dependencies live in a virtualenv at `venv/` (gitignored). The startup update script keeps it current. Run everything with `venv/bin/python` (there is no bare `python` on the VM, only `python3`).
 - The one-off system package `python3-venv` (and `python3-pip`) was installed via apt so `python3 -m venv` works; this persists in the VM snapshot, so it is not part of the update script.
 - Entry point is `run.py` with subcommands: `train`, `demo`, `visualize`, `compare`, `evaluate`, plus network-graph commands `network-train`, `network-demo`, `network-evaluate`, `network-visualize`. Example: `venv/bin/python run.py evaluate --model models/conveyor_ppo_final`.
-- Graph conveyor networks: presets `merge` / `diamond` / `triple` or custom JSON under `graphs/`. Train a small throughput policy with e.g. `venv/bin/python run.py network-demo --preset merge` (writes under `models/network/` and `network_demo.gif`).
+- Graph conveyor networks: presets `merge` / `diamond` / `triple` or custom JSON under `graphs/`. Train a small throughput policy with e.g. `venv/bin/python run.py network-demo --preset merge` (writes under `models/network/` and `network_demo.gif`). Draw topology with `network-graph`; animate rollouts with `network-visualize` (optional `--graph-output` PNG).
 - There is no test suite, no linter config, and no build step. The de-facto end-to-end smoke test is `venv/bin/python run.py demo` (trains 50k steps, then evaluates/visualizes/compares).
 
 ### Gotchas

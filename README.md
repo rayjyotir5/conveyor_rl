@@ -328,6 +328,36 @@ python run.py network-evaluate --graph graphs/custom_merge.json --model models/n
 python run.py network-visualize --graph graphs/custom_merge.json --output /tmp/network.gif
 ```
 
+### Visualizing the graph and policy
+
+**Static topology** (no model required):
+
+```bash
+python run.py network-graph --preset merge --output network_graph.png
+python run.py network-graph --preset diamond --output diamond_graph.png
+python run.py network-graph --graph graphs/custom_merge.json --output custom_graph.png
+```
+
+**Policy rollout GIF** (items, belt MOVE highlights, junction routing, throughput):
+
+```bash
+python run.py network-visualize \
+  --preset merge \
+  --model models/network/network_ppo_final \
+  --output network_rollout.gif \
+  --graph-output network_graph.png \
+  --steps 150 --fps 5
+```
+
+Use `--random` to animate a random policy without a trained model.
+
+The GIF shows:
+- Directed belts with per-cell occupancy
+- Green arrows when a belt is MOVING
+- Orange highlight on the junction's active inbound/outbound route
+- Action + routing strip under the graph
+- Throughput and items-in-system over time
+
 ### Network modules
 
 | File | Purpose |
@@ -335,7 +365,7 @@ python run.py network-visualize --graph graphs/custom_merge.json --output /tmp/n
 | `network_graphs.py` | Presets, JSON load/validate |
 | `network_env.py` | `NetworkConveyorEnv` Gymnasium environment |
 | `train_network.py` | Small-policy PPO training + eval |
-| `visualize_network.py` | Graph rollout GIF |
+| `visualize_network.py` | Static graph PNG + rollout GIF |
 
 ## License
 
