@@ -21,6 +21,8 @@ env/
 # Model checkpoints (keep final model)
 models/checkpoints/
 models/best/
+models/network/checkpoints/
+models/network/best/
 
 # TensorBoard logs (optional - uncomment to track)
 # logs/

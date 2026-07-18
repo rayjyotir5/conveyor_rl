@@ -1,0 +1,33 @@
+{
+  "name": "custom_line",
+  "description": "Source \u2192 junction \u2192 sink (routing trivial, pace the belt)",
+  "nodes": [
+    {
+      "id": "src",
+      "type": "source",
+      "spawn_rate": 0.9
+    },
+    {
+      "id": "mid",
+      "type": "junction"
+    },
+    {
+      "id": "sink",
+      "type": "sink"
+    }
+  ],
+  "edges": [
+    {
+      "id": "in",
+      "source": "src",
+      "target": "mid",
+      "length": 5
+    },
+    {
+      "id": "out",
+      "source": "mid",
+      "target": "sink",
+      "length": 5
+    }
+  ]
+}

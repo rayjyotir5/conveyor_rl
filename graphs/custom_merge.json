@@ -1,0 +1,44 @@
+{
+  "name": "custom_merge",
+  "description": "Example custom 2\u21921 merge graph",
+  "nodes": [
+    {
+      "id": "src_a",
+      "type": "source",
+      "spawn_rate": 0.7
+    },
+    {
+      "id": "src_b",
+      "type": "source",
+      "spawn_rate": 0.7
+    },
+    {
+      "id": "merge",
+      "type": "junction"
+    },
+    {
+      "id": "sink",
+      "type": "sink"
+    }
+  ],
+  "edges": [
+    {
+      "id": "conv_a",
+      "source": "src_a",
+      "target": "merge",
+      "length": 4
+    },
+    {
+      "id": "conv_b",
+      "source": "src_b",
+      "target": "merge",
+      "length": 4
+    },
+    {
+      "id": "conv_out",
+      "source": "merge",
+      "target": "sink",
+      "length": 4
+    }
+  ]
+}
